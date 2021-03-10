@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
+const figlet = require('figlet');
+const chalk = require('chalk');
 // const mysql = require('mysql');
-
 
 // // create the connection information for the sql database
 // const connection = mysql.createConnection({
@@ -13,9 +14,17 @@ const inquirer = require('inquirer');
 //     database: 'company_db',
 // });
 
+
+
 const start = () => {
-    console.log('WELCOME TO THE EMPLOYEE TRACKER')
+    console.log(
+        chalk.cyan(
+            figlet.textSync('EMPLOYEE TRACKER', { horizontalLayout: 'full', font: 'Cyberlarge' })
+                                                                                //CYBERLARGE MERLIN1 SHADOW SLANT
+        )
+    );
     inquirer.prompt({
+        pageSize: 30,
         name: 'selection',
         type: 'list',
         message: 'What would you like to do?',
