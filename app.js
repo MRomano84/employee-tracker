@@ -19,8 +19,8 @@ connection.connect((err) => {
     if(err) {
         console.log(err);
     }
+    //The Kickoff
     start();
-    // console.log(`${connection.threadId} is connected on PORT# ${connection.port}`);
 })
 
 //-----Functions to view all Employees, Departments, and Roles
@@ -30,7 +30,7 @@ const viewEmps = () => {
             figlet.textSync('EMPLOYEES', { horizontalLayout: 'controlled smushing', font: 'slant' }) //CYBERLARGE MERLIN1 SHADOW SLANT
         )
     );
-    connection.query('SELECT first_name, last_name, role_id Department FROM employee JOIN role ON employee.role_id = role.department_id',
+    connection.query('SELECT first_name, last_name, title, salary FROM employee INNER JOIN role ON employee.role_id = role.id;',
     function (err, res) {
         if (err) throw (err);
         console.table(res);
@@ -39,6 +39,11 @@ const viewEmps = () => {
 }
 
 const viewDepts = () => {
+    console.log(
+        chalk.whiteBright(
+            figlet.textSync('DEPARTMENTS', { horizontalLayout: 'controlled smushing', font: 'slant' }) //CYBERLARGE MERLIN1 SHADOW SLANT
+        )
+    );
     connection.query('SELECT department.name FROM department',
     function (err, res) {
         if (err) throw (err);
@@ -48,7 +53,13 @@ const viewDepts = () => {
 }
 
 const viewRoles = () => {
-    connection.query('SELECT employee.first_name, employee.last_name, role.title AS Title FROM employee JOIN role ON employee.role_id = role.id;',
+    // connection.query('SELECT employee.first_name, employee.last_name, role.title AS Title FROM employee JOIN role ON employee.role_id = role.id;',
+    console.log(
+        chalk.whiteBright(
+            figlet.textSync('ROLES', { horizontalLayout: 'controlled smushing', font: 'slant' }) //CYBERLARGE MERLIN1 SHADOW SLANT
+        )
+    );
+    connection.query('SELECT role.title, role.salary FROM role',
     function (err, res) {
         if (err) throw (err);
         console.table(res);
@@ -60,7 +71,7 @@ const viewRoles = () => {
 const addEmp = () => {
     console.log(
         chalk.whiteBright(
-            figlet.textSync('ADD\nEMPLOYEE', { horizontalLayout: 'controlled smushing', font: 'slant' }) //CYBERLARGE MERLIN1 SHADOW SLANT
+            figlet.textSync('ADD EMPLOYEE', { horizontalLayout: 'controlled smushing', font: 'slant' }) //CYBERLARGE MERLIN1 SHADOW SLANT
         )
     );
     inquirer.prompt([
@@ -102,6 +113,11 @@ const addEmp = () => {
 }
 
 const addDept = () => {
+    console.log(
+        chalk.whiteBright(
+            figlet.textSync('ADD DEPARTMENT', { horizontalLayout: 'controlled smushing', font: 'slant' }) //CYBERLARGE MERLIN1 SHADOW SLANT
+        )
+    );
     inquirer.prompt([
         {
             type: 'input',
@@ -116,16 +132,61 @@ const addDept = () => {
         },
         function(err, res) {
             if (err) throw (err);
-            console.table(department);
+            console.log(`${answers.name} Has Been Added As A Department.`);
             start();
         })
     })
 }
 
 const addRole = () => {
-    
+    console.log(
+        chalk.whiteBright(
+            figlet.textSync('ADD ROLE', { horizontalLayout: 'controlled smushing', font: 'slant' }) //CYBERLARGE MERLIN1 SHADOW SLANT
+        )
+    );
+    connection.query('SELECT role.title AS Title, role.salary AS Salary FROM role',
+    (err, res) => {
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'title',
+                message: 'Enter The Title For The New Role:'
+            },
+            {
+                type: 'input',
+                name: 'salary',
+                message: 'Enter The Salary For The New Role:'
+            },
+            {
+                type: 'list',
+                name: 'department',
+                message: 'Enter the Department ID For Which The New Role Belongs\n1-Finance 2-Legal 3-Logistics 4-Service 5-Marketing:',
+                choices: [
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5'
+                ]
+            }
+        ])
+        .then((answers) => {
+            connection.query('INSERT INTO role SET ?',
+            {
+                title: answers.title,
+                salary: answers.salary,
+                department_id: answers.department
+            },
+            function (err, res) {
+                if (err) throw (err);
+                start();
+            })
+        })
+    })
 }
 
+
+//-----   AND FINALLY, THE KICKOFF! -----
 const start = () => {
     console.log(
         chalk.cyan(
@@ -138,6 +199,7 @@ const start = () => {
         type: 'list',
         message: 'What would you like to do?',
         choices: [
+            new inquirer.Separator(),
             'View Employees',
             'View Departments',
             'View Roles',
@@ -146,7 +208,7 @@ const start = () => {
             'Add Department',
             'Add Role',
             new inquirer.Separator(),
-            'Update Employee Role'
+            // 'Update Employee Role'
         ],
     })
     .then((answers) => {
@@ -166,13 +228,13 @@ const start = () => {
             case 'Add Department':
                 addDept();
                 break;
-            case 'Add Roles':
-                //FUNCTION TO ADD ROLES 
+            case 'Add Role':
+                addRole();
                 break;
-            case 'Update Employee Role':
-                //FUNCTION TO UPDATE EMP ROLE 
-                break;
+            // case 'Update Employee Role':
+            //     // getEmps();
+            //     updateEmp(); 
+            //     break;
         }
     })
 };
-                            
