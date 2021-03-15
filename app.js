@@ -25,11 +25,6 @@ connection.connect((err) => {
 
 //-----Functions to view all Employees, Departments, and Roles
 const viewEmps = () => {
-    console.log(
-        chalk.whiteBright(
-            figlet.textSync('EMPLOYEES', { horizontalLayout: 'controlled smushing', font: 'slant' }) //CYBERLARGE MERLIN1 SHADOW SLANT
-        )
-    );
     connection.query('SELECT first_name, last_name, title, salary FROM employee INNER JOIN role ON employee.role_id = role.id;',
     function (err, res) {
         if (err) throw (err);
@@ -39,11 +34,6 @@ const viewEmps = () => {
 }
 
 const viewDepts = () => {
-    console.log(
-        chalk.whiteBright(
-            figlet.textSync('DEPARTMENTS', { horizontalLayout: 'controlled smushing', font: 'slant' }) //CYBERLARGE MERLIN1 SHADOW SLANT
-        )
-    );
     connection.query('SELECT department.name FROM department',
     function (err, res) {
         if (err) throw (err);
@@ -54,11 +44,6 @@ const viewDepts = () => {
 
 const viewRoles = () => {
     // connection.query('SELECT employee.first_name, employee.last_name, role.title AS Title FROM employee JOIN role ON employee.role_id = role.id;',
-    console.log(
-        chalk.whiteBright(
-            figlet.textSync('ROLES', { horizontalLayout: 'controlled smushing', font: 'slant' }) //CYBERLARGE MERLIN1 SHADOW SLANT
-        )
-    );
     connection.query('SELECT role.title, role.salary FROM role',
     function (err, res) {
         if (err) throw (err);
@@ -70,11 +55,6 @@ const viewRoles = () => {
 //-----Functions to add Employees, Departments, and Roles
 //-----ADD NEW EMPLOYEE-----
 const addEmp = () => {
-    console.log(
-        chalk.whiteBright(
-            figlet.textSync('ADD EMPLOYEE', { horizontalLayout: 'controlled smushing', font: 'slant' }) //CYBERLARGE MERLIN1 SHADOW SLANT
-        )
-    );
     inquirer.prompt([
         {
             type: 'input',
@@ -115,11 +95,6 @@ const addEmp = () => {
 
 //-----ADD NEW DEPARTMENT-----
 const addDept = () => {
-    console.log(
-        chalk.whiteBright(
-            figlet.textSync('ADD DEPARTMENT', { horizontalLayout: 'controlled smushing', font: 'slant' }) //CYBERLARGE MERLIN1 SHADOW SLANT
-        )
-    );
     inquirer.prompt([
         {
             type: 'input',
@@ -142,11 +117,6 @@ const addDept = () => {
 
 //-----ADD NEW ROLE
 const addRole = () => {
-    console.log(
-        chalk.whiteBright(
-            figlet.textSync('ADD ROLE', { horizontalLayout: 'controlled smushing', font: 'slant' }) //CYBERLARGE MERLIN1 SHADOW SLANT
-        )
-    );
     connection.query('SELECT role.title AS Title, role.salary AS Salary FROM role',
     (err, res) => {
         inquirer.prompt([
@@ -190,11 +160,6 @@ const addRole = () => {
 
 //-----UPDATE CURRENT EMPLOYEE
 const updateEmp = () => {
-    console.log(
-        chalk.whiteBright(
-            figlet.textSync('UPDATE\nEMPLOYEE', { horizontalLayout: 'controlled smushing', font: 'slant' }) //CYBERLARGE MERLIN1 SHADOW SLANT
-        )
-    );
     connection.query('SELECT last_name FROM employee', (err, res) => {
         inquirer.prompt([
             {
@@ -228,11 +193,16 @@ const updateEmp = () => {
     })
 }
 
+const quit = () => {
+    console.log('GOODBYE!');
+    process.exit();
+}
+
 //-----FUNCTION THAT CONTROLS APP
 const start = () => {
     console.log(
         chalk.cyan(
-            figlet.textSync('EMPLOYEE\nTRACKER', { horizontalLayout: 'full', font: 'CYBERLARGE' }) //CYBERLARGE MERLIN1 SHADOW SLANT
+            figlet.textSync('EMPLOYEE\nTRACKER', { horizontalLayout: 'full', font: 'CYBERSMALL' }) //CYBERLARGE MERLIN1 SHADOW SLANT
         )
         );
         inquirer.prompt({
@@ -250,7 +220,9 @@ const start = () => {
             'Add Department',
             'Add Role',
             new inquirer.Separator(),
-            'Update Employee Role'
+            'Update Employee Role',
+            new inquirer.Separator(),
+            'Quit'
         ],
     })
     .then((answers) => {
@@ -275,7 +247,10 @@ const start = () => {
                 break;
             case 'Update Employee Role':
                 updateEmp(); 
-            break;
+                break;
+            case 'Quit':
+                quit();
+                break;
         }
     })
 };
