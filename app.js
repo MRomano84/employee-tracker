@@ -2,7 +2,7 @@ const inquirer = require('inquirer');
 const figlet = require('figlet');
 const chalk = require('chalk');
 const mysql = require('mysql2');
-const table = require('console.table');
+const cTable = require('console.table');
 
 // create the connection information for the sql database
 const connection = mysql.createConnection({
@@ -19,7 +19,7 @@ connection.connect((err) => {
     if(err) {
         console.log(err);
     }
-    //The Kickoff
+    console.log(`${connection.threadId} is connected on PORT# ${connection.port}`);
     start();
 })
 
@@ -68,6 +68,7 @@ const viewRoles = () => {
 }
 
 //-----Functions to add Employees, Departments, and Roles
+//-----ADD NEW EMPLOYEE-----
 const addEmp = () => {
     console.log(
         chalk.whiteBright(
@@ -112,6 +113,7 @@ const addEmp = () => {
     })
 }
 
+//-----ADD NEW DEPARTMENT-----
 const addDept = () => {
     console.log(
         chalk.whiteBright(
@@ -138,6 +140,7 @@ const addDept = () => {
     })
 }
 
+//-----ADD NEW ROLE
 const addRole = () => {
     console.log(
         chalk.whiteBright(
@@ -185,15 +188,53 @@ const addRole = () => {
     })
 }
 
+//-----UPDATE CURRENT EMPLOYEE
+const updateEmp = () => {
+    console.log(
+        chalk.whiteBright(
+            figlet.textSync('UPDATE\nEMPLOYEE', { horizontalLayout: 'controlled smushing', font: 'slant' }) //CYBERLARGE MERLIN1 SHADOW SLANT
+        )
+    );
+    connection.query('SELECT last_name FROM employee', (err, res) => {
+        inquirer.prompt([
+            {
+                type: 'rawlist',
+                name: 'last_name',
+                message: 'Choose an Employee To Update:',
+                choices: function () {
+                    let names = [];
+                    for(let i = 0; i < res.length; i++) {
+                        names.push(res[i].last_name);
+                    }
+                    return names;
+                }
+            },
+            {
+                type: 'number',
+                name: 'role_id',
+                message: 'Enter The Employee\s New Role ID:'
+            },
+        ])
+        .then((answers) => {
+            // console.log(answers.role_id);
+            // console.log(answers.last_name);
+            connection.query(`UPDATE employee SET role_id = ${answers.role_id} WHERE employee.last_name = '${answers.last_name}';`), function(err, res) {
+                if (err) throw (err);
+                // console.log(res);
+                start();
+            }
+        })
+    })
+}
 
-//-----   AND FINALLY, THE KICKOFF! -----
+//-----FUNCTION THAT CONTROLS APP
 const start = () => {
     console.log(
         chalk.cyan(
             figlet.textSync('EMPLOYEE\nTRACKER', { horizontalLayout: 'full', font: 'CYBERLARGE' }) //CYBERLARGE MERLIN1 SHADOW SLANT
         )
-    );
-    inquirer.prompt({
+        );
+        inquirer.prompt({
         pageSize: 30,
         name: 'selection',
         type: 'list',
@@ -208,7 +249,7 @@ const start = () => {
             'Add Department',
             'Add Role',
             new inquirer.Separator(),
-            // 'Update Employee Role'
+            'Update Employee Role'
         ],
     })
     .then((answers) => {
@@ -216,10 +257,10 @@ const start = () => {
             case 'View Employees':
                 viewEmps();
                 break;                
-            case 'View Departments':
+                case 'View Departments':
                 viewDepts();
                 break;
-            case 'View Roles':
+                case 'View Roles':
                 viewRoles(); 
                 break;
             case 'Add Employee':
@@ -231,10 +272,9 @@ const start = () => {
             case 'Add Role':
                 addRole();
                 break;
-            // case 'Update Employee Role':
-            //     // getEmps();
-            //     updateEmp(); 
-            //     break;
+            case 'Update Employee Role':
+                updateEmp(); 
+            break;
         }
     })
 };
