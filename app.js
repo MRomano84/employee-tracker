@@ -19,7 +19,8 @@ connection.connect((err) => {
     if(err) {
         console.log(err);
     }
-    console.log(`${connection.threadId} is connected on PORT# ${connection.port}`);
+    // console.log(`${connection.threadId} is connected on PORT# ${connection.port}`);
+    //THE KICKOFF
     start();
 })
 
@@ -218,11 +219,12 @@ const updateEmp = () => {
         .then((answers) => {
             // console.log(answers.role_id);
             // console.log(answers.last_name);
-            connection.query(`UPDATE employee SET role_id = ${answers.role_id} WHERE employee.last_name = '${answers.last_name}';`), function(err, res) {
+            connection.query(`UPDATE employee SET role_id = ${answers.role_id} WHERE employee.last_name = '${answers.last_name}'`, function(err, res) {
                 if (err) throw (err);
+                console.log(`Employee ${answers.last_name} Has Been Updated.`);
                 // console.log(res);
                 start();
-            }
+            })
         })
     })
 }
