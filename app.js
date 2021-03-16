@@ -202,9 +202,10 @@ const quit = () => {
 const start = () => {
     console.log(
         chalk.cyan(
-            figlet.textSync('EMPLOYEE\nTRACKER', { horizontalLayout: 'full', font: 'CYBERSMALL' }) //CYBERLARGE MERLIN1 SHADOW SLANT
+            figlet.textSync('EMPLOYEE\nTRACKER', { horizontalLayout: 'full', font: 'CYBERMEDIUM' }) //CYBERLARGE MERLIN1 SHADOW SLANT
         )
         );
+        // console.log('\n');
         inquirer.prompt({
         pageSize: 30,
         name: 'selection',
